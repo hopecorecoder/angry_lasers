@@ -1,10 +1,43 @@
 <body>
-    <h1>it works!</h1>
-    <style>
-      body { background: black; color: white; font-family: sans-serif; }
-    </style>
-    <script>
-      const title = document.querySelector("h1");
-      title.onclick = () => (title.textContent = "you clicked it");
-    </script>
+    <canvas id="c">
+        <style >
+
+            *{padding:0;margin:0}
+            
+        </style>
+        <script>
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+
+            ctx.beginPath();
+            ctx.fillStyle="lightblue";
+            ctx.rect(0,0,1500,1000);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.fillStyle="green";
+            ctx.rect(0,600,1500,220);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.fillStyle="black";
+            ctx.rect(40,500,75,100);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.fillStyle="darkgrey";
+            ctx.rect(115,465,75,20);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(77.5, 475, 50, 0 , 2*Math.PI);
+            ctx.fillStyle = 'grey';
+            ctx.fill();
+
+            function drawShooter(){
+
+            }
+        </script>
+    </canvas>
   </body>
