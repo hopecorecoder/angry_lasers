@@ -1,5 +1,5 @@
 <body>
-    <canvas id="c">
+    <canvas id="c" >
         <style >
 
             *{padding:0;margin:0}
@@ -35,8 +35,45 @@
             ctx.fillStyle = 'grey';
             ctx.fill();
 
-            function drawShooter(){
+           document.addEventListener("mousedown",drawCircle);
+           let radius=0.0;
+            function drawCircle(e){
+                    
+                    const id = setInterval(frame, 150);
+                    function frame() {
+                        
+                        if(radius==45)
+                         {
+                            clearInterval(id);
+                            radius=0;
+                         }   
+                        else
+                        {
+                            ctx.beginPath();
+                            ctx.arc(77.5, 475, radius, 0 , 2*Math.PI);
+                            ctx.fillStyle = 'red';
+                            ctx.fill();
+                            radius+=2.5;
 
+                        }
+                        
+                    }
+                }
+                
+            
+
+            
+            document.addEventListener("mouseup",destroyCircle);
+            function destroyCircle(e){
+                ctx.beginPath();
+                ctx.arc(77.5, 475, 50, 0 , 2*Math.PI);
+                ctx.fillStyle = 'grey';
+                ctx.fill();
+                if(radius==45) shootLaser()
+                radius=0.0;
+            }
+            function shootLaser(){
+                
             }
         </script>
     </canvas>
