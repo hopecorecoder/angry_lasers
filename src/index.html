@@ -10,47 +10,108 @@
             c.width = window.innerWidth;
             c.height = window.innerHeight;
 
-            ctx.beginPath();
-            ctx.fillStyle="lightblue";
-            ctx.rect(0,0,1500,1000);
-            ctx.fill();
+            
+                ctx.beginPath();
+                ctx.fillStyle="lightblue";
+                ctx.rect(0,0,1500,1000);
+                ctx.fill();
 
-            ctx.beginPath();
-            ctx.fillStyle="green";
-            ctx.rect(0,600,1500,220);
-            ctx.fill();
+                ctx.beginPath();
+                ctx.fillStyle="green";
+                ctx.rect(0,600,1500,220);
+                ctx.fill();
 
-            ctx.beginPath();
-            ctx.fillStyle="black";
-            ctx.rect(40,500,75,100);
-            ctx.fill();
+                ctx.beginPath();
+                ctx.fillStyle="black";
+                ctx.rect(40,500,75,100);
+                ctx.fill();
 
-            ctx.beginPath();
-            ctx.fillStyle="darkgrey";
-            ctx.rect(115,465,75,20);
-            ctx.fill();
+                ctx.beginPath();
+                ctx.fillStyle="grey";
+                ctx.rect(128,465,75,20);
+                ctx.fill();
+                const pivotX = 77.5; 
+                const pivotY = 475
+                
+                ctx.beginPath();
+                ctx.arc(pivotX, pivotY, 60, 0 , 2*Math.PI);
+                ctx.fillStyle = 'grey';
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(pivotX, pivotY, 50, 0 , 2*Math.PI);
+                ctx.fillStyle = 'darkgrey';
+                ctx.fill();
+            
+            let id=0,id2=0;
+            let isMouseDown = false;
+           document.addEventListener("mousedown",drawCircle);
+           let radius=0.0;
+           function drawTurret(e) {
+            const dx = e.clientX - pivotX;
+            const dy = e.clientY - pivotY;
+            const angle = Math.atan2(dy, dx);
 
+            // 2. ERASE OLD BARREL: Clear the bounding region around the turret head
+            // (Clears a 200x200 box centered at pivotX, pivotY)
+            ctx.clearRect(pivotX - 100, pivotY - 100, 300, 200);
+
+            // 3. REDRAW BACKGROUND / BASE UNDERNEATH THE CLEARED AREA
+            // Sky portion
+            ctx.fillStyle = "lightblue";
+            ctx.fillRect(pivotX - 100, pivotY - 125, 400, 125 + (600 - pivotY));
+
+            // Ground portion if within cleared box (ground starts at y = 600)
+            if (pivotY + 100 > 600) {
+                ctx.fillStyle = "green";
+                ctx.fillRect(pivotX - 100, 600, 200, (pivotY + 100) - 600);
+            }
+
+            // Black Base Box
+            ctx.fillStyle = "black";
+            ctx.fillRect(40, 500, 75, 100);
+
+            // 4. DRAW ROTATED BARREL
+            ctx.save();
+                ctx.translate(pivotX, pivotY);
+                ctx.rotate(angle);
+
+                // Barrel extending toward cursor
+                ctx.beginPath();
+                ctx.fillStyle = "grey";
+                ctx.rect(0, -10, 125, 20);
+                ctx.fill();
+            ctx.restore();
+
+            // 5. REDRAW STATIC DOME OVER THE BARREL JOINT
             ctx.beginPath();
-            ctx.arc(77.5, 475, 50, 0 , 2*Math.PI);
+            ctx.arc(pivotX, pivotY, 60, 0, 2 * Math.PI);
             ctx.fillStyle = 'grey';
             ctx.fill();
 
-           document.addEventListener("mousedown",drawCircle);
-           let radius=0.0;
+            ctx.beginPath();
+            ctx.arc(pivotX, pivotY, 50, 0, 2 * Math.PI);
+            ctx.fillStyle = 'darkgrey';
+            ctx.fill();
+        }
             function drawCircle(e){
-                    
-                    const id = setInterval(frame, 150);
+                isMouseDown=true;
+                 id = setInterval(frame, 150);
+              
                     function frame() {
+
                         
-                        if(radius==45)
+                        
+                        if(radius>=45)
                          {
-                            clearInterval(id);
-                            radius=0;
+                            clearInterval(id);   
+                                     
                          }   
                         else
                         {
+                            
                             ctx.beginPath();
-                            ctx.arc(77.5, 475, radius, 0 , 2*Math.PI);
+                            ctx.arc(pivotX, pivotY, radius, 0 , 2*Math.PI);
                             ctx.fillStyle = 'red';
                             ctx.fill();
                             radius+=2.5;
@@ -62,19 +123,44 @@
                 
             
 
-            
+            document.addEventListener('mousemove',(e)=>{
+                if(!isMouseDown){
+                    drawTurret(e)
+                }
+            })
             document.addEventListener("mouseup",destroyCircle);
             function destroyCircle(e){
+                  
+                clearInterval(id);
                 ctx.beginPath();
-                ctx.arc(77.5, 475, 50, 0 , 2*Math.PI);
-                ctx.fillStyle = 'grey';
+                ctx.arc(pivotX, pivotY, 50, 0 , 2*Math.PI);
+                ctx.fillStyle = 'darkgrey';
                 ctx.fill();
-                if(radius==45) shootLaser()
+                if(radius>=45) {shootLaser(e)}
                 radius=0.0;
             }
-            function shootLaser(){
+            function shootLaser(e){
+                
+                const x=e.clientX;
+                const y =e.clientY;
+                if(!(x>210))return;
+                ctx.beginPath();
+                ctx.moveTo(190,465)
+                ctx.lineTo(x, y);
+                ctx.lineWidth=7;
+                ctx.strokeStyle="red";
+                ctx.stroke();
+                setTimeout(()=>{
+                    ctx.beginPath();
+                    ctx.moveTo(190,465)
+                    ctx.lineTo(x, y);
+                    ctx.lineWidth=10;
+                    ctx.strokeStyle="lightblue";
+                    ctx.stroke();
+                },750)
                 
             }
+            
         </script>
     </canvas>
   </body>
