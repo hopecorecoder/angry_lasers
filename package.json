@@ -1,0 +1,23 @@
+{
+  "name": "angry_lasers",
+  "version": "1.0.0",
+  "description": "A simple game about using lasers to destroy the enemies's base.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hopecorecoder/angry_lasers.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hopecorecoder/angry_lasers/issues"
+  },
+  "homepage": "https://github.com/hopecorecoder/angry_lasers#readme",
+  "devDependencies": {
+    "terser": "^5.51.2"
+  }
+}
