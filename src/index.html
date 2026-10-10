@@ -1,6 +1,3 @@
-//TODO:
-//      2.add enemies/levels
-//      3. intro and musiic
 <body>
 
     <canvas id="c" >
@@ -122,7 +119,7 @@
                             ctx.arc(pivotX, pivotY, radius, 0 , 2*Math.PI);
                             ctx.fillStyle = 'red';
                             ctx.fill();
-                            radius+=2.5;
+                            radius+=5;
 
                         }
                         
@@ -151,6 +148,19 @@
                 
                 const x=e.clientX;
                 const y =e.clientY;
+                existingEnemies = existingEnemies.filter((enemy) => {
+                let hit = x >= enemy.x && x <= enemy.x + 42 && y >= enemy.y && y <= enemy.y + 20;
+                if (hit) {
+                    enemies++;//remove dead entity
+                    ctx.beginPath();
+                     ctx.fillStyle = "lightblue";
+                     ctx.fillRect(enemy.x, enemy.y, 30, 30);
+                     ctx.fill();
+                    return false; // remove enemy
+
+                }
+                return true;
+            });
                 if(!(x>210))return;
                 ctx.beginPath();
                 ctx.moveTo(190,465)
@@ -176,8 +186,8 @@
             let existingEnemies = [];
             function update(dt,enemy) {
             // move 50 pixels every second, and wrap around at the edge
-                    return x = enemy- ( 50 * dt);
-                    
+                    let x = enemy- ( 500 * dt);
+                    return x;
             }
             function drawEnemies() {
                 if(existingEnemies.length!=0){
@@ -186,22 +196,23 @@
                         //remove old entity
                         ctx.beginPath();
                         ctx.fillStyle = "lightblue";
-                        ctx.fillRect(enemy.x, enemy.y, 50, 50);
+                        ctx.fillRect(enemy.x, enemy.y, 30, 30);
                         ctx.fill();
                         enemy.x = update(dtGlobal,enemy.x);
                         //add new entity at new position
                         ctx.beginPath();
                         ctx.fillStyle="black";
-                        ctx.fillRect(enemy.x, enemy.y, 40, 40);
+                        ctx.fillRect(enemy.x, enemy.y, 20, 20);
                         ctx.fill();
 
                     })
                 }
                 else{
-                    for(let i=0; i<5;i++){
+                    wave++;
+                    for(let i=0; i<5+(wave-1);i++){
                         let x = Math.floor(Math.random()*200)+1320;
                         let y = Math.floor(Math.random()*200)+400;
-                        while(y>600)
+                        while(y>500)
                             y = Math.floor(Math.random()*200)+400;
                         existingEnemies.push({x:x, y:y})
                         
@@ -210,28 +221,61 @@
                 }
                 
             }
-            
+            function cleanupEnemies() {
+            existingEnemies = existingEnemies.filter((enemy) => {
+                // If an enemy reaches or crosses the turret area (x <= 115)
+                if (enemy.x <= 115) {
+                    isGameOver = true;
+                    return false;
+                }
+                return true;
+            });
+        }
+            let isGameOver = false;
             let last = 0;
             let dtGlobal = 0;
             function frame(now) {
-            dtGlobal=Math.min((now - last) / 1000, 0.1);
-            update(Math.min((now - last) / 1000, 0.1),existingEnemies);
-            last = now;
-            drawEnemies();
+            
             requestAnimationFrame(frame);
             if(!hasBegun){
                 ctx.font = "60px Arial";
                 ctx.fillStyle="darkblue"
                 ctx.fillText("Hold to shoot laser",300,200);
+                
             }
-            if(hasBegun){
+            cleanupEnemies();
+            if(hasBegun && !isGameOver){
+                ctx.beginPath();
+                ctx.fillStyle="lightblue"
+                ctx.fillRect(300,105,1000,100);
+                ctx.fill();
+                // 1. Clear the text area for Wave and Enemies Killed before redrawing
+                ctx.beginPath();
+                ctx.fillStyle = "green"; // matches your ground background
+                ctx.fillRect(15, 610, 300, 90);
+                ctx.fill();
+
+                // 2. Render updated text
                 ctx.font = "30px Arial";
-                ctx.fillStyle="darkblue"
-                ctx.fillText("Wave: "+wave,20,650);
-                ctx.fillText("Enemies killed: "+enemies,20,680);
-               
+                ctx.fillStyle = "darkblue";
+                ctx.fillText("Wave: " + wave, 20, 650);
+                ctx.fillText("Enemies killed: " + enemies, 20, 680);
+
+                dtGlobal = Math.min((now - last) / 1000, 0.1);
+                last = now;
+                drawEnemies(); 
             }
-            
+            if (isGameOver) {
+                ctx.beginPath();
+                ctx.font = "70px Arial";
+                ctx.fillStyle = "red";
+                ctx.fillText("YOU LOST!",300,200);
+                wave=0;
+                enemies=0;
+
+                return; 
+            }
+           
             }
             requestAnimationFrame(frame);
         </script>
