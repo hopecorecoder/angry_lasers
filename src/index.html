@@ -1,4 +1,8 @@
+//TODO:
+//      2.add enemies/levels
+//      3. intro and musiic
 <body>
+
     <canvas id="c" >
         <style >
 
@@ -26,6 +30,7 @@
                 ctx.rect(40,500,75,100);
                 ctx.fill();
 
+                
                 ctx.beginPath();
                 ctx.fillStyle="grey";
                 ctx.rect(128,465,75,20);
@@ -45,9 +50,11 @@
             
             let id=0,id2=0;
             let isMouseDown = false;
-           document.addEventListener("mousedown",drawCircle);
-           let radius=0.0;
-           function drawTurret(e) {
+            document.addEventListener("mousedown",drawCircle);
+            let radius=0.0;
+
+
+            function drawTurret(e) {
             const dx = e.clientX - pivotX;
             const dy = e.clientY - pivotY;
             const angle = Math.atan2(dy, dx);
@@ -81,7 +88,7 @@
                 ctx.fillStyle = "grey";
                 ctx.rect(0, -10, 125, 20);
                 ctx.fill();
-            ctx.restore();
+                ctx.restore();
 
             // 5. REDRAW STATIC DOME OVER THE BARREL JOINT
             ctx.beginPath();
@@ -96,6 +103,7 @@
         }
             function drawCircle(e){
                 isMouseDown=true;
+                hasBegun=true;
                  id = setInterval(frame, 150);
               
                     function frame() {
@@ -130,7 +138,7 @@
             })
             document.addEventListener("mouseup",destroyCircle);
             function destroyCircle(e){
-                  
+                isMouseDown=false;
                 clearInterval(id);
                 ctx.beginPath();
                 ctx.arc(pivotX, pivotY, 50, 0 , 2*Math.PI);
@@ -161,6 +169,71 @@
                 
             }
             
+            let wave=0;
+            let hasBegun=false;
+            let enemies =0;
+            
+            let existingEnemies = [];
+            function update(dt,enemy) {
+            // move 50 pixels every second, and wrap around at the edge
+                    return x = enemy- ( 50 * dt);
+                    
+            }
+            function drawEnemies() {
+                if(existingEnemies.length!=0){
+                   
+                    existingEnemies.map((enemy)=>{
+                        //remove old entity
+                        ctx.beginPath();
+                        ctx.fillStyle = "lightblue";
+                        ctx.fillRect(enemy.x, enemy.y, 50, 50);
+                        ctx.fill();
+                        enemy.x = update(dtGlobal,enemy.x);
+                        //add new entity at new position
+                        ctx.beginPath();
+                        ctx.fillStyle="black";
+                        ctx.fillRect(enemy.x, enemy.y, 40, 40);
+                        ctx.fill();
+
+                    })
+                }
+                else{
+                    for(let i=0; i<5;i++){
+                        let x = Math.floor(Math.random()*200)+1320;
+                        let y = Math.floor(Math.random()*200)+400;
+                        while(y>600)
+                            y = Math.floor(Math.random()*200)+400;
+                        existingEnemies.push({x:x, y:y})
+                        
+                        
+                    }
+                }
+                
+            }
+            
+            let last = 0;
+            let dtGlobal = 0;
+            function frame(now) {
+            dtGlobal=Math.min((now - last) / 1000, 0.1);
+            update(Math.min((now - last) / 1000, 0.1),existingEnemies);
+            last = now;
+            drawEnemies();
+            requestAnimationFrame(frame);
+            if(!hasBegun){
+                ctx.font = "60px Arial";
+                ctx.fillStyle="darkblue"
+                ctx.fillText("Hold to shoot laser",300,200);
+            }
+            if(hasBegun){
+                ctx.font = "30px Arial";
+                ctx.fillStyle="darkblue"
+                ctx.fillText("Wave: "+wave,20,650);
+                ctx.fillText("Enemies killed: "+enemies,20,680);
+               
+            }
+            
+            }
+            requestAnimationFrame(frame);
         </script>
     </canvas>
   </body>
